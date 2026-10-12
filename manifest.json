@@ -1,0 +1,24 @@
+{
+  "name": "Wawa Night Animation",
+  "short_name": "WawaNight",
+  "description": "Night animation inspired by a Wawa gas station and store scene. Compatible with TheoTown.",
+  "author": "alexis78901",
+  "version": "1.0.0",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0b1220",
+  "theme_color": "#1b304d",
+  "orientation": "landscape",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

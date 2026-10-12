@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wawa Night Animation - TheoTown</title>
+  <style>
+    :root {
+      --bg-1: #0a1220;
+      --bg-2: #132b40;
+      --bg-3: #1f3f5f;
+      --white: #f2f2f2;
+      --blue-deep: #0f4dbb;
+      --blue-mid: #0a3ca4;
+      --red: #e51d2c;
+      --red-dark: #b9121d;
+      --beige: #d6c4a5;
+      --gray: #a5a7aa;
+      --gray-dark: #676a73;
+      --road: #2e2e31;
+      --road-shadow: #191b1f;
+      --line: #f5e9b3;
+      --leaf: #2ba565;
+      --leaf-dark: #1d864d;
+      --shadow: rgba(0,0,0,0.32);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 50% 15%, rgba(64,94,136,0.65), transparent 28%),
+        linear-gradient(180deg, #202f46 0%, #111b2b 55%, #0b1019 100%);
+      font-family: Arial, sans-serif;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+    }
+
+    canvas {
+      width: min(100vw, 1400px);
+      height: min(100vh, 820px);
+      display: block;
+      background: linear-gradient(180deg, #1d2431 0%, #233b5d 35%, #0d1a2a 100%);
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border-radius: 10px;
+      box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+    }
+
+    .info {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      color: #f2f2f2;
+      font-size: 12px;
+      opacity: 0.7;
+      font-family: monospace;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="scene" width="1400" height="820"></canvas>
+  <div class="info">Wawa Night Animation v1.0 | Author: alexis78901 | TheoTown Compatible</div>
+
+  <script>
+    const canvas = document.getElementById("scene");
+    const ctx = canvas.getContext("2d");
+
+    const W = canvas.width;
+    const H = canvas.height;
+
+    let stars = [];
+    let cars = [];
+    let time = 0;
+
+    function rand(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    function createStars() {
+      stars = [];
+      for (let i = 0; i < 170; i++) {
+        stars.push({
+          x: Math.random() * W,
+          y: Math.random() * H * 0.5,
+          r: Math.random() * 2 + 0.8,
+          a: Math.random() * 0.8 + 0.2
+        });
+      }
+    }
+
+    function createCars() {
+      cars = [
+        { x: -120, y: 505, w: 56, h: 28, speed: 1.4, color: "#2d2d2d", light: "#6ee0ff" },
+        { x: 760, y: 545, w: 62, h: 30, speed: -1.2, color: "#d3262f", light: "#ff9aa2" },
+        { x: 420, y: 585, w: 60, h: 27, speed: 1.05, color: "#efefef", light: "#dfe9f1" }
+      ];
+    }
+
+    function drawBackground() {
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0, "#0d1a2a");
+      sky.addColorStop(0.22, "#1a2d45");
+      sky.addColorStop(0.52, "#203a59");
+      sky.addColorStop(1, "#0c1622");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      const moon = ctx.createRadialGradient(W*0.78, H*0.15, 18, W*0.78, H*0.15, 150);
+      moon.addColorStop(0, "rgba(255,255,255,0.9)");
+      moon.addColorStop(0.28, "rgba(255,255,255,0.3)");
+      moon.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.fillStyle = moon;
+      ctx.fillRect(0, 0, W, H);
+
+      stars.forEach(s => {
+        const twinkle = 0.5 + Math.sin(time * 0.003 + s.x * 0.1) * 0.5;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(255,255,255,${s.a * twinkle})`;
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    function drawGround() {
+      ctx.fillStyle = "#292a2d";
+      ctx.fillRect(0, H * 0.72, W, H * 0.28);
+
+      ctx.fillStyle = "#383b40";
+      ctx.fillRect(0, H * 0.72, W, 18);
+
+      ctx.fillStyle = "#3b3c41";
+      ctx.fillRect(0, 470, W, 260);
+
+      for (let x = 0; x < W; x += 40) {
+        ctx.fillStyle = "rgba(255,255,255,0.03)";
+        ctx.fillRect(x, 480, 1, 220);
+      }
+      for (let y = 500; y < 710; y += 34) {
+        ctx.fillStyle = "rgba(0,0,0,0.06)";
+        ctx.fillRect(0, y, W, 1);
+      }
+    }
+
+    function drawPump() {
+      const px = 280;
+      const py = 470;
+
+      ctx.fillStyle = "#e8d7b5";
+      ctx.fillRect(px - 30, py - 140, 220, 150);
+
+      ctx.fillStyle = "#0d4ee7";
+      ctx.fillRect(px, py, 160, 120);
+
+      ctx.fillStyle = "#e21f2c";
+      ctx.fillRect(px + 6, py + 18, 148, 16);
+
+      ctx.fillStyle = "#0d4ee7";
+      ctx.fillRect(px - 18, py - 120, 180, 120);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 26px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Wawa", px + 72, py - 82);
+
+      ctx.font = "bold 19px Arial";
+      ctx.fillText("Reg 3.49", px + 72, py - 56);
+      ctx.fillText("Plus 3.79", px + 72, py - 30);
+      ctx.fillText("Premium 4.19", px + 72, py - 4);
+
+      ctx.fillStyle = "#0b2f8d";
+      ctx.fillRect(px - 40, py - 100, 36, 120);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 18px Arial";
+      ctx.fillText("W", px - 25, py - 65);
+      ctx.fillText("a", px - 25, py - 45);
+      ctx.fillText("w", px - 25, py - 25);
+      ctx.fillText("a", px - 25, py - 5);
+
+      ctx.strokeStyle = "#dfe7ef";
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(px + 70, py + 100);
+      ctx.lineTo(px + 70, py + 150);
+      ctx.moveTo(px + 110, py + 100);
+      ctx.lineTo(px + 110, py + 150);
+      ctx.stroke();
+
+      ctx.fillStyle = "#dfe8ed";
+      ctx.fillRect(px + 60, py + 150, 18, 28);
+      ctx.fillRect(px + 100, py + 150, 18, 28);
+
+      ctx.fillStyle = "#1f2023";
+      ctx.fillRect(px + 52, py + 120, 10, 80);
+      ctx.fillRect(px + 123, py + 120, 10, 80);
+    }
+
+    function drawBuilding() {
+      const x = 340;
+      const y = 110;
+      const w = 720;
+      const h = 310;
+
+      ctx.fillStyle = "#b0b0a9";
+      ctx.fillRect(x, y + 80, w, h - 64);
+
+      ctx.fillStyle = "#91959a";
+      ctx.fillRect(x + 18, y + 26, w - 36, 46);
+
+      ctx.fillStyle = "#6c6e74";
+      for (let i = 0; i < 7; i++) {
+        ctx.fillRect(x + 60 + i * 92, y + 20, 46, 44);
+      }
+
+      ctx.fillStyle = "#0f4bb7";
+      ctx.fillRect(x + 120, y + 120, w - 240, 120);
+
+      ctx.fillStyle = "#d7192d";
+      ctx.fillRect(x + 120, y + 180, w - 240, 38);
+
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "bold 100px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText("Wawa", x + w/2, y + 200);
+
+      for (let i = 0; i < 6; i++) {
+        const wx = x + 60 + i * 110;
+        ctx.fillStyle = "#f0d09c";
+        ctx.fillRect(wx, y + 90, 70, 95);
+        ctx.fillStyle = "#1b2332";
+        ctx.fillRect(wx + 8, y + 100, 54, 80);
+        ctx.fillStyle = "rgba(255,255,255,0.15)";
+        ctx.fillRect(wx + 12, y + 104, 18, 32);
+      }
+
+      ctx.fillStyle = "#f2e0ba";
+      ctx.fillRect(x + 220, y + 185, 120, 120);
+      ctx.fillStyle = "#0d1830";
+      ctx.fillRect(x + 230, y + 195, 100, 100);
+      ctx.fillStyle = "#f0d9a2";
+      ctx.fillRect(x + 248, y + 210, 20, 70);
+
+      ctx.fillStyle = "#d5d1ca";
+      ctx.fillRect(x + 30, y + 90, 70, 90);
+      ctx.fillStyle = "#f1d69a";
+      ctx.fillRect(x + 40, y + 100, 50, 62);
+
+      ctx.fillStyle = "#d5d1ca";
+      ctx.fillRect(x + w - 100, y + 90, 70, 90);
+      ctx.fillStyle = "#f1d69a";
+      ctx.fillRect(x + w - 90, y + 100, 50, 62);
+
+      ctx.fillStyle = "#d7d5d0";
+      ctx.fillRect(x + 40, y + 250, w - 80, 32);
+
+      ctx.fillStyle = "rgba(0,0,0,0.1)";
+      ctx.fillRect(x, y + h - 18, w, 18);
+    }
+
+    function drawTree(x, y, s = 1) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(s, s);
+
+      ctx.fillStyle = "#5e402f";
+      ctx.fillRect(-10, 0, 20, 26);
+
+      for (let i = 0; i < 6; i++) {
+        const color = i % 2 === 0 ? "#1d9c58" : "#2aa765";
+        ctx.fillStyle = color;
+        ctx.beginPath();
+        ctx.arc(-18 + i * 12, -12 - (i % 2) * 9, 16, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.restore();
+    }
+
+    function drawStreetLight(x, y) {
+      ctx.fillStyle = "#2d3136";
+      ctx.fillRect(x, y, 6, 180);
+
+      ctx.fillStyle = "#f8d764";
+      ctx.fillRect(x - 6, y - 10, 18, 16);
+
+      const glow = 0.4 + Math.sin(time * 0.005 + x * 0.01) * 0.45;
+      ctx.fillStyle = `rgba(248, 215, 100, ${0.18 + glow * 0.4})`;
+      ctx.fillRect(x - 18, y - 26, 42, 42);
+    }
+
+    function drawParkingCars() {
+      const cars = [
+        { x: 180, y: 612, w: 40, h: 20, color: "#2f2d2d", glow: "#7bd8ff" },
+        { x: 520, y: 612, w: 42, h: 20, color: "#fafafa", glow: "#dfe9f1" },
+        { x: 860, y: 612, w: 40, h: 20, color: "#d83135", glow: "#ff98a2" },
+        { x: 1080, y: 612, w: 42, h: 20, color: "#2d4fc0", glow: "#8fd0ff" }
+      ];
+
+      cars.forEach(car => {
+        ctx.save();
+        ctx.translate(car.x, car.y);
+        ctx.fillStyle = car.color;
+        ctx.fillRect(0, 0, car.w, car.h);
+
+        ctx.fillStyle = "#1e1e1e";
+        ctx.fillRect(5, 2, 9, 7);
+        ctx.fillRect(car.w - 15, 2, 9, 7);
+
+        ctx.fillStyle = car.glow;
+        ctx.fillRect(6, car.h - 3, 8, 3);
+        ctx.fillRect(car.w - 14, car.h - 3, 8, 3);
+        ctx.restore();
+      });
+    }
+
+    function drawMovingCars() {
+      cars.forEach(car => {
+        ctx.save();
+        ctx.translate(car.x, car.y);
+
+        ctx.fillStyle = car.color;
+        ctx.fillRect(0, 0, car.w, car.h);
+
+        ctx.fillStyle = "#1d1d1d";
+        ctx.fillRect(7, 2, 12, 8);
+        ctx.fillRect(car.w - 18, 2, 12, 8);
+
+        ctx.fillStyle = car.light;
+        ctx.fillRect(8, car.h - 3, 11, 3);
+        ctx.fillRect(car.w - 18, car.h - 3, 11, 3);
+
+        ctx.restore();
+      });
+    }
+
+    function updateCars() {
+      cars.forEach(car => {
+        car.x += car.speed;
+        if (car.speed > 0 && car.x > W + 180) car.x = -200;
+        if (car.speed < 0 && car.x < -200) car.x = W + 180;
+      });
+    }
+
+    function drawScene() {
+      drawBackground();
+      drawGround();
+
+      drawStreetLight(210, 525);
+      drawStreetLight(1145, 525);
+
+      drawTree(95, 650, 1.0);
+      drawTree(1220, 642, 0.95);
+      drawTree(1000, 675, 0.9);
+
+      drawBuilding();
+      drawPump();
+      drawParkingCars();
+      drawMovingCars();
+
+      ctx.fillStyle = "#d5d7d0";
+      ctx.fillRect(1085, 430, 10, 140);
+      ctx.fillRect(1150, 430, 8, 100);
+      ctx.fillStyle = "#5d6e59";
+      for (let x = 1090; x < 1185; x += 18) {
+        ctx.fillRect(x, 430, 4, 150);
+      }
+
+      ctx.fillStyle = "#6f7e67";
+      ctx.fillRect(1080, 420, 120, 8);
+
+      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillRect(0, H - 40, W, 40);
+    }
+
+    function loop() {
+      time = performance.now();
+      updateCars();
+      drawScene();
+      requestAnimationFrame(loop);
+    }
+
+    createStars();
+    createCars();
+    loop();
+  </script>
+</body>
+</html>

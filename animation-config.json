@@ -1,0 +1,33 @@
+{
+  "title": "Wawa Night Animation",
+  "author": "alexis78901",
+  "version": "1.0.0",
+  "type": "web-animation",
+  "platform": "TheoTown",
+  "scene": "isometric-gas-station-night",
+  "loop": true,
+  "fps": 60,
+  "resolution": "1400x820",
+  "style": {
+    "background": "night",
+    "layout": "pixel-isometric",
+    "roadline": "none",
+    "corners": "filled",
+    "accentColors": ["#0f4bb7", "#e21f2c", "#f8d764"]
+  },
+  "effects": [
+    "stars",
+    "streetLights",
+    "movingCars",
+    "nightGlow",
+    "parkingLights",
+    "treeAnimation"
+  ],
+  "gameSettings": {
+    "buildingType": "commercial",
+    "category": "gas-station",
+    "zone": "commercial",
+    "width": 64,
+    "height": 48
+  }
+}
